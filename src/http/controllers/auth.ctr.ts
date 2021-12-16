@@ -10,7 +10,7 @@ export class AuthController {
 
 
     constructor(protected service: authService, private jwtService: jwtService) {
-        
+
     }
 
 
@@ -21,7 +21,11 @@ export class AuthController {
 
             if (authenticated) {
 
-                res.cookie("X_META_JWT", this.jwtService.encode(authenticated), {
+                res.cookie("X_META_JWT", this.jwtService.encode({
+                    id: authenticated.id,
+                    role: authenticated.role,
+                    username: authenticated.username
+                }), {
                     expires: Date.now() + 86400000,
                     httpOnly: process.env.NODE_ENV === "DEVELOPMENT",
                     secure: process.env.NODE_ENV === "PRODUCTION",

@@ -1,8 +1,8 @@
-import { Ability } from "@casl/ability";
+import { Ability, AbilityBuilder, AbilityClass } from "@casl/ability";
 import { User, Role } from "@prisma/client";
 
-type Abilites = "CREATE" | "UPDATE" | "DELETE" | "READ" | "CRUD";
-type resources =
+export type Abilites = "CREATE" | "UPDATE" | "DELETE" | "READ" | "CRUD";
+export type resources =
   | "Role"
   | "Category"
   | "Customer"
@@ -16,23 +16,29 @@ type resources =
 enum roles {
   "user" = "user",
   "admin" = "admin",
-  "superUser" = "superUser",
+  "superUser" = "superuser",
 }
 
 export class Authorize {
   static getAbilites(User_: User & { role: Role }) {
-    let UserAbilites = new Ability<[Abilites, resources]>();
+    type ap = Ability<[Abilites, resources]>;
+    const appAbility = Ability as AbilityClass<ap>;
+
+    let builder = new AbilityBuilder(appAbility);
 
     let usrRole = <Role>User_.role;
 
+    console.log(usrRole)
 
     if (usrRole.title === roles.superUser) {
-      UserAbilites.can("CRUD", "ALL")
+
+      builder.can("CRUD", "ALL");
+
     } else {
-      UserAbilites.can("CRUD", "Order")
-      UserAbilites.can("CRUD", "Customer")
+      builder.can("CRUD", "Order")
+      builder.can("CRUD", "Customer")
     }
 
-    return UserAbilites;
+    return builder.build();
   }
 }

@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
 import { Unique } from "../../database/validators/Unique";
 
@@ -18,10 +19,12 @@ export class createProduct {
 
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     quantity!: number;
 
     @IsNotEmpty()
     @IsNumber()
+    @Transform(({ value }) => parseInt(value))
     price!: number;
 
 
@@ -29,6 +32,7 @@ export class createProduct {
     @IsString()
     @MaxLength(25)
     @MinLength(2)
+    @Transform(({ value }) => parseInt(value))
     price_unit?: string;
 
     @IsNotEmpty()
@@ -49,6 +53,7 @@ export class createProduct {
 export class updateProduct {
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     id?: number;
 
     @IsNotEmpty()
@@ -66,10 +71,12 @@ export class updateProduct {
 
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     quantity!: number;
 
     @IsNotEmpty()
     @IsNumber()
+    @Transform(({ value }) => parseInt(value))
     price!: number;
 
 
@@ -81,6 +88,7 @@ export class updateProduct {
 
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     categoryId!: number;
 
     @IsString()

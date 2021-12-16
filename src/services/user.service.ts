@@ -15,11 +15,11 @@ export class userService {
 
 
   async All() {
-    return await this.dbContext.user.findMany();
+    return await this.dbContext.user.findMany({ include: { role: true } });
   }
 
   async find(id: string) {
-    return await this.dbContext.user.findFirst({ where: { id: parseInt(id) } })
+    return await this.dbContext.user.findFirst({ where: { id: parseInt(id) }, include: { role: true } })
   }
 
   async findByUsername(username: string) {

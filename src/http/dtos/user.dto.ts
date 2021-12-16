@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import {
   IsInt,
   IsNotEmpty,
@@ -32,6 +33,7 @@ export class createUser {
 export class updateUser {
   @IsNotEmpty()
   @IsInt()
+  @Transform(({ value }) => parseInt(value))
   id!: number;
 
   @IsNotEmpty()

@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { IsInt, IsNotEmpty, IsOptional, IsString, Validate } from "class-validator";
 import { Unique } from "../../database/validators/Unique";
 
@@ -16,6 +17,7 @@ export class createRole {
 export class updateRole {
   @IsNotEmpty()
   @IsInt()
+  @Transform(({ value }) => parseInt(value))
   id?: number;
 
   @IsString()

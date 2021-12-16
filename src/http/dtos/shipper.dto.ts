@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
 import { Unique } from "../../database/validators/Unique";
 
@@ -35,6 +36,7 @@ export class createShipper {
 export class updateShipper {
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     id?: number;
 
     @IsNotEmpty()

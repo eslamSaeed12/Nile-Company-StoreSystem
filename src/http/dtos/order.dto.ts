@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, ValidateNested } from "class-validator";
 
 export class createOrder {
@@ -9,14 +9,17 @@ export class createOrder {
 
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     quantity!: number;
 
     @IsNotEmpty()
     @IsNumber()
+    @Transform(({ value }) => parseInt(value))
     price!: number;
 
     @IsNotEmpty()
     @IsNumber()
+    @Transform(({ value }) => parseInt(value))
     total!: number;
 
 
@@ -28,14 +31,17 @@ export class createOrder {
 
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     shipperId?: number;
 
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     supplierId?: number;
 
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     customerId!: number;
 
     @IsArray()
@@ -57,6 +63,7 @@ export class createOrder {
 export class updateOrder {
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     id?: number;
 
     @IsNotEmpty()
@@ -65,14 +72,17 @@ export class updateOrder {
 
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     quantity!: number;
 
     @IsNotEmpty()
     @IsNumber()
+    @Transform(({ value }) => parseInt(value))
     price!: number;
 
     @IsNotEmpty()
     @IsNumber()
+    @Transform(({ value }) => parseInt(value))
     total!: number;
 
 
@@ -84,10 +94,12 @@ export class updateOrder {
 
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     shipperId?: number;
 
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     supplierId?: number;
 
     @IsOptional()
@@ -112,9 +124,11 @@ export class updateOrder {
 export class order_sync {
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     productId!: number;
     
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     orderId!: number;
 }

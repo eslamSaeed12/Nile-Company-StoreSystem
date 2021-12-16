@@ -1,4 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
 import { Unique } from "../../database/validators/Unique";
 
 export class createCustomer {
@@ -37,7 +38,8 @@ export class createCustomer {
 
 export class updateCustomer {
     @IsNotEmpty()
-    @IsNumber()
+    @IsInt()
+    @Transform(({ value }) => parseInt(value))
     id?: Number;
 
     @IsNotEmpty()
