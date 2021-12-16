@@ -7,7 +7,7 @@ import "./modules/events";
 import { Logger } from "./utils/Logger";
 import { PgConnection } from "./database/connections/pg.con";
 
-class NagdaWebApp {
+class NileStoreWebApp {
   public static async main() {
     // environment variables parser from .env file [development only]
     envInializer();
@@ -27,7 +27,7 @@ class NagdaWebApp {
   }
 }
 
-NagdaWebApp.main().catch((err) => {
+NileStoreWebApp.main().catch((err) => {
   Logger.error(err);
   process.exit(1);
 }).finally(async () => {
