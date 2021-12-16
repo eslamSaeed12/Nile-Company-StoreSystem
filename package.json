@@ -6,11 +6,6 @@
   "directories": {
     "test": "test"
   },
-  "jest": {
-    "testTimeout": 15000,
-    "preset": "ts-jest",
-    "testEnvironment": "node"
-  },
   "scripts": {
     "test": "jest",
     "dev": "nodemon --config nodemon.json src/app.ts",
@@ -79,6 +74,7 @@
     "jest": "^27.4.5",
     "nodemon": "^2.0.15",
     "prisma": "^3.6.0",
+    "ts-jest": "^27.1.2",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
   }
