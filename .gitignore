@@ -1,6 +1,4 @@
 .env
 /node_modules
 package-lock.json
-ormconfig.json
-ormconfig.json
-notes.notes.txt
+/nile-front-end

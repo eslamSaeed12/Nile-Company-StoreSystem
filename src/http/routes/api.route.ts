@@ -105,6 +105,7 @@ export class ApiRouter extends Router_ {
     // auth routes [authenticated]
     this.Router.post("/auth", BodyGuard.validate(AuthLogin), this.authCtr.login)
     this.Router.delete("/auth", middlewareCollection(), this.authCtr.logout);
+    this.Router.get("/auth",middlewareCollection(),this.authCtr.ok)
   }
 
 

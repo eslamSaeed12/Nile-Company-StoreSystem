@@ -14,6 +14,10 @@ export class AuthController {
     }
 
 
+    ok = (req: any, res: any, next: NextFunction) => {
+        res.status(200).json(true);
+    }
+
     login = async (req: any, res: any, next: NextFunction) => {
         try {
             const { username, password } = req.body;
@@ -26,10 +30,10 @@ export class AuthController {
                     role: authenticated.role,
                     username: authenticated.username
                 }), {
-                    expires: Date.now() + 86400000,
-                    httpOnly: process.env.NODE_ENV === "DEVELOPMENT",
-                    secure: process.env.NODE_ENV === "PRODUCTION",
-                    maxAge: Date.now() + 86400000
+                    expires: Date.now() + 86400,
+                    httpOnly: process.env.NODE_ENV?.toUpperCase() === "DEVELOPMENT",
+                    secure: process.env.NODE_ENV?.toUpperCase() === "PRODUCTION",
+                    maxAge: Date.now() + 86400
                 });
 
                 res.json({ user: { username: authenticated.username, role: authenticated.role } })
