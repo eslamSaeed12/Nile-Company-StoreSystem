@@ -23,7 +23,7 @@ export class userService {
   }
 
   async findByUsername(username: string) {
-    return await this.dbContext.user.findFirst({ where: { username } })
+    return await this.dbContext.user.findFirst({ where: { username }, include: { role: true } })
   }
 
   async insert(dto: any) {

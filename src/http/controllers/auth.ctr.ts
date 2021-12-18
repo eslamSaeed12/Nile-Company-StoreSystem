@@ -15,7 +15,15 @@ export class AuthController {
 
 
     ok = (req: any, res: any, next: NextFunction) => {
-        res.status(200).json(true);
+        const user = req.user;
+        res.status(200).json({
+            username: user.username, role: {
+                id: user.role.id,
+                title: user.role.title
+            },
+            id: user.id,
+            authenticated: true
+        });
     }
 
     login = async (req: any, res: any, next: NextFunction) => {
@@ -36,7 +44,14 @@ export class AuthController {
                     maxAge: Date.now() + 86400
                 });
 
-                res.json({ user: { username: authenticated.username, role: authenticated.role } })
+                res.json({
+                    username: authenticated.username, role: {
+                        id: authenticated.role.id,
+                        title: authenticated.role.title
+                    },
+                    id: authenticated.id,
+                    authenticated: true
+                })
                 return;
             }
 
