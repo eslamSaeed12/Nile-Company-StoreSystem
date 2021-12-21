@@ -11,7 +11,7 @@ export class JwtErrorFilter extends filter {
 
         if (err instanceof TokenExpiredError || err instanceof JsonWebTokenError) {
 
-            res.status(401).json({ message: 'انتهت صلاحية الجلسة برجاء اعادة تسجيل الدخول' })
+            res.status(403).json({ message: 'انتهت صلاحية الجلسة برجاء اعادة تسجيل الدخول' })
             
         } else {
             next(err);
