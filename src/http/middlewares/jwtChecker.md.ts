@@ -1,7 +1,7 @@
-import { User } from "@prisma/client";
 import { NextFunction } from "express";
 import { BadRequest, Unauthorized } from "http-errors";
 import { injectable } from "tsyringe";
+import { User } from "../../database/models/User";
 import { middlewre } from "../../modules/IMiddleware";
 import { jwtService } from "../../services/jwt.service";
 import { userService } from "../../services/user.service";

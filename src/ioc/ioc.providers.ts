@@ -8,7 +8,18 @@ import { JwtErrorFilter } from "../http/filters/jwtExpiredFilter";
 import { ApiRouter } from "../http/routes/api.route";
 import { filter, middlewre } from "../modules/IMiddleware";
 import { Router_ } from "../modules/IRouter";
+import { ContainedType, useContainer, ContainerInterface } from "typeorm";
+
 //import { TaskRunner } from "../modules/ITask";
+
+class ContainerAdapter implements ContainerInterface {
+    get<T>(someClass: ContainedType<T>): T {
+        return container.resolve(<any>someClass);
+    }
+}
+
+
+useContainer(new ContainerAdapter)
 
 container.register(Router_.token, ApiRouter);
 container.register(middlewre.token, JwtCheckerMiddleware);

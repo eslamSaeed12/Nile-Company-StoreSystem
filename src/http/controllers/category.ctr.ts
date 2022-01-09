@@ -1,5 +1,4 @@
 import { injectable } from "tsyringe";
-import { shipperService } from "../../services/shipper.service";
 import { Request, Response, NextFunction } from "express"
 import { categoryService } from "../../services/category.service";
 

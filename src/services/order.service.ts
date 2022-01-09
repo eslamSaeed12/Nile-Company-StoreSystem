@@ -1,94 +1,96 @@
-import { PrismaClient } from "@prisma/client";
 import { injectable } from "tsyringe";
-import { PgConnection } from "../database/connections/pg.con";
+import { Connection, getRepository, Repository } from "typeorm";
+import { Order } from "../database/models/Order";
 
 @injectable()
 export class orderService {
 
 
-    private dbContext: PrismaClient;
+    private dbContext: Repository<Order>;
 
-    constructor(provider: PgConnection) {
-        this.dbContext = provider.getConnection();
+    constructor(db:Connection) {
+        this.dbContext = db.getRepository(Order);
     }
 
 
     async All() {
-        return await this.dbContext.order.findMany();
+        return await this.dbContext.find();
     }
 
     async count() {
-        return await this.dbContext.order.count();
+        return await this.dbContext.count();
     }
 
 
     async find(id: string) {
-        return await this.dbContext.order.findFirst({ where: { id: parseInt(id) } })
+        return await this.dbContext.findOneOrFail(id);
     }
 
     async insert(dto: any) {
-        let order = await this.dbContext.order.create({
-            data: {
-                customerId: dto.customerId,
-                shipperId: dto.shipperId,
-                notes: dto.notes,
-                paindUnit: dto.paidUnit,
-                price: dto.price,
-                total: dto.total,
-                quantity: dto.quantity,
-                supplierId: dto.supplierId,
+        let order = await this.dbContext.insert({
+            customer: {
+                id: dto.customerId
             },
-            include: {
-                Customer: true,
-                Shipper: true,
-                Supplier: true,
-                products: true
-            }
+            shipper: {
+                id: dto.shipperId
+            },
+            notes: dto.notes,
+            paindUnit: dto.paidUnit,
+            price: dto.price,
+            total: dto.total,
+            quantity: dto.quantity,
+            supplier: {
+                id: dto.supplierId
+            },
         });
 
-        let mappedOrderProducts = dto.products.map((p: number) => ({ productId: p, orderId: order.id }));
+        //let mappedOrderProducts = dto.products.map((p: number) => ({ productId: p, orderId: order.id }));
 
-        await this.dbContext.productsOnOrders.createMany({ data: mappedOrderProducts });
+        //await this.dbContext.productsOnOrders.createMany({ data: mappedOrderProducts });
 
         return order;
     }
 
     async update(dto: any) {
-        return await this.dbContext.order.update({
-            where: { id: parseInt(dto.id) }, data: {
-                customerId: dto.customerId,
-                shipperId: dto.shipperId,
-                notes: dto.notes,
-                paindUnit: dto.paidUnit,
-                price: dto.price,
-                total: dto.total,
-                quantity: dto.quantity,
-                supplierId: dto.supplierId,
-            }
+        return await this.dbContext.update(dto.id, {
+            customer: {
+                id: dto.customerId
+            },
+            shipper: {
+                id: dto.shipperId
+            },
+            notes: dto.notes,
+            paindUnit: dto.paidUnit,
+            price: dto.price,
+            total: dto.total,
+            quantity: dto.quantity,
+            supplier: {
+                id: dto.supplierId
+            },
         });
     }
 
     async removeProduct(dto: any) {
-        return await this.dbContext.productsOnOrders.delete({
+        /*return await this.dbContext.productsOnOrders.delete({
             where: {
                 productId_orderId: {
                     orderId: dto.orderId,
                     productId: dto.productId
                 }
             }
-        });
+        });*/
     }
 
     async addProduct(dto: any) {
-        return await this.dbContext.productsOnOrders.create({
-            data: {
-                orderId: dto.orderId,
-                productId: dto.productId
-            }
-        });
+        /*  return await this.dbContext.productsOnOrders.create({
+              data: {
+                  orderId: dto.orderId,
+                  productId: dto.productId
+              }
+          });*/
     }
 
     async delete(id: string) {
-        return await this.dbContext.order.delete({ where: { id: parseInt(id) } })
+        return await this.dbContext.delete(id)
     }
 }

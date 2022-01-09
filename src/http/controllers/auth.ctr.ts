@@ -1,9 +1,10 @@
-import { Role, User } from "@prisma/client";
 import { NextFunction } from "express";
 import { injectable } from "tsyringe";
 import { authService } from "../../services/auth.service";
 import { jwtService } from "../../services/jwt.service";
 import { NotFound } from "http-errors"
+import { User } from "../../database/models/User";
+import { Role } from "../../database/models/Role";
 
 @injectable()
 export class AuthController {
@@ -41,7 +42,7 @@ export class AuthController {
                     expires: Date.now() + 86400,
                     httpOnly: process.env.NODE_ENV?.toUpperCase() === "DEVELOPMENT",
                     secure: process.env.NODE_ENV?.toUpperCase() === "PRODUCTION",
-                    maxAge: Date.now() + 86400
+                    sameSite: true
                 });
 
                 res.json({

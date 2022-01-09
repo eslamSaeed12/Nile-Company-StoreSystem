@@ -1,60 +1,56 @@
-import { PrismaClient } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 import { injectable } from "tsyringe";
-import { PgConnection } from "../database/connections/pg.con";
-
+import { Connection, getRepository, Repository } from "typeorm";
+import { User } from "../database/models/User";
 @injectable()
 export class userService {
 
-  private dbContext: PrismaClient;
+  private dbContext: Repository<User>;
 
 
-  constructor(provider: PgConnection) {
-    this.dbContext = provider.getConnection();
+  constructor(db:Connection) {
+    this.dbContext = db.getRepository(User);
   }
 
 
   async All() {
-    return await this.dbContext.user.findMany({ include: { role: true } });
+    return await this.dbContext.find();
   }
 
   async find(id: string) {
-    return await this.dbContext.user.findFirst({ where: { id: parseInt(id) }, include: { role: true } })
+    return await this.dbContext.findOne(id)
   }
 
   async findByUsername(username: string) {
-    return await this.dbContext.user.findFirst({ where: { username }, include: { role: true } })
+    return await this.dbContext.findOneOrFail({ username })
   }
 
   async insert(dto: any) {
-    return await this.dbContext.user.create({
-      data: {
-        username: dto.username,
-        password: hashSync(dto.password),
-        roleId: 1, //  default user ,
+    return await this.dbContext.insert({
+      username: dto.username,
+      password: hashSync(dto.password),
+      role: {
+        id: dto.roleId
       }
     })
   }
 
   async update(dto: any, passwordUpdated: boolean) {
-    return await this.dbContext.user.update({
-      where: {
-        id: parseInt(dto.id)
+    return await this.dbContext.update(dto.id, {
+      role: {
+        id: dto.roleId
       },
-      data: {
-        roleId: dto.roleId,
-        username: dto.username,
-        password: passwordUpdated ? hashSync(dto.password) : dto.password
-      }
+      username: dto.username,
+      password: passwordUpdated ? hashSync(dto.password) : dto.password
     })
   }
 
   async delete(id: string) {
-    return await this.dbContext.user.delete({ where: { id: parseInt(id) } })
+    return await this.dbContext.delete(id)
   }
 
   async count() {
-    return await this.dbContext.user.count()
+    return await this.dbContext.count()
   }
 
 }

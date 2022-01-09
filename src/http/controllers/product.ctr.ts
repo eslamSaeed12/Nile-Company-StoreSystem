@@ -1,7 +1,6 @@
 import { injectable } from "tsyringe";
 import { Request, Response, NextFunction } from "express"
 import { productService } from "../../services/product.service";
-
 @injectable()
 export class productController {
 
@@ -12,6 +11,22 @@ export class productController {
     index = async (req: Request, res: Response, next: NextFunction) => {
         try {
             res.json(await this.service.All())
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
+    checkPname = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { product_name } = req.body;
+            const isExist = await this.service.checkProductName(product_name);
+
+            if (isExist) {
+                res.json(true);
+            } else {
+                res.json(false)
+            }
         } catch (err) {
             next(err)
         }

@@ -32,7 +32,7 @@ export class createProduct {
     @IsString()
     @MaxLength(25)
     @MinLength(2)
-    @Transform(({ value }) => parseInt(value))
+    @IsOptional()
     price_unit?: string;
 
     @IsNotEmpty()
@@ -84,6 +84,7 @@ export class updateProduct {
     @IsString()
     @MaxLength(25)
     @MinLength(2)
+    @IsOptional()
     price_unit?: string;
 
     @IsNotEmpty()

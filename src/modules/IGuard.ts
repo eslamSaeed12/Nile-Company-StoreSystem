@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { ClassConstructor, plainToClass } from "class-transformer"
 import { validateOrReject } from "class-validator";
 import { Authorize, resources, Abilites } from "../services/authorization.service";
-import { Role, User } from "@prisma/client";
 import { Unauthorized } from "http-errors"
+import { User } from "../database/models/User";
+import { Role } from "../database/models/Role";
 export interface IRequestGuard {
   check(req: Request): boolean | Promise<boolean>;
 }
@@ -36,7 +37,7 @@ export class GateGuard {
           next();
           return;
         }
-        
+
         throw new Unauthorized("not allowed !");
 
       } catch (err) {

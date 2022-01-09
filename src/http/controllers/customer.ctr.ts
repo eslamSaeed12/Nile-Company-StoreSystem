@@ -1,5 +1,4 @@
 import { injectable } from "tsyringe";
-import { supplierService } from "../../services/supplier.service";
 import { Request, Response, NextFunction } from "express"
 import { customerService } from "../../services/customer.service";
 import { createCustomer, updateCustomer } from "../dtos/customer.dto";

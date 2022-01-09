@@ -1,8 +1,8 @@
-import { User } from "@prisma/client";
 import { AuthRegister, AuthLogin } from "../http/dtos/Auth.dto";
 import bcrypt from "bcryptjs";
 import { injectable } from "tsyringe";
 import { userService } from "./user.service";
+import { User } from "../database/models/User";
 
 @injectable()
 export class authService {

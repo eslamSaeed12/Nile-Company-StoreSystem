@@ -36,7 +36,7 @@ export class server {
   private RegisterRouters() {
     for (let router of this.routers) {
 
-        router.sail();
+      router.sail();
 
       if (router?.getPrefix) {
         this.server.use(router.getPrefix(), router.getRouter());
@@ -54,21 +54,23 @@ export class server {
     }
 
     this.server.use(morgan("combined"));
-    this.server.use(helmet());
-    this.server.use(timeout("30s"));
+    this.server.use(helmet({ contentSecurityPolicy: false, xssFilter: false }));
+    //this.server.use(timeout("30s"));
     this.server.use(bodyParser.json());
     this.server.use(bodyParser.urlencoded());
     this.server.use(hpp());
-    this.server.use(
+   /* this.server.use(
       Limiter({
         windowMs: 15 * 60 * 1000,
         max: 100,
       })
-    );
+    );*/
     this.server.use(express.static(join(__dirname, "public")));
     this.server.use(
       cors({
         origin: isDev ? "*" : os.hostname(),
+        credentials: true,
+        preflightContinue: true,
       })
     );
     this.server.use(cookieParser(process.env.COOKIES_SECRET_KEY));

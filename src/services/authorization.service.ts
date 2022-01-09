@@ -1,6 +1,6 @@
 import { Ability, AbilityBuilder, AbilityClass } from "@casl/ability";
-import { User, Role } from "@prisma/client";
-
+import { Role } from "../database/models/Role";
+import { User } from "../database/models/User";
 export type Abilites = "CREATE" | "UPDATE" | "DELETE" | "READ" | "CRUD";
 export type resources =
   | "Role"
@@ -26,9 +26,8 @@ export class Authorize {
 
     let builder = new AbilityBuilder(appAbility);
 
-    let usrRole = <Role>User_.role;
+    let usrRole = User_.role;
 
-    console.log(usrRole)
 
     if (usrRole.title === roles.superUser) {
 

@@ -40,7 +40,7 @@ export class updateCustomer {
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
-    id?: Number;
+    id!: number;
 
     @IsNotEmpty()
     @IsString()

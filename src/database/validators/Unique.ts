@@ -1,10 +1,10 @@
-import { injectable } from "tsyringe";
+import { container, inject, injectable } from "tsyringe";
 import {
   ValidatorConstraintInterface,
   ValidatorConstraint,
   ValidationArguments,
 } from "class-validator";
-import { PgConnection } from "../connections/pg.con";
+import { getRepository, QueryBuilder } from "typeorm";
 
 export interface IUniqueCustomArgs {
   entity: string;
@@ -17,25 +17,25 @@ export class Unique implements ValidatorConstraintInterface {
   async validate(
     value: any,
     validationArguments?: ValidationArguments,
-    con?: PgConnection
   ): Promise<boolean> {
+
     const { entity, field } = validationArguments
       ?.constraints[0] as IUniqueCustomArgs;
 
-    if (!entity || field) {
+
+    if (!entity || !field) {
       throw new Error(
         "you should put entity of uniquness and filed to check !"
       );
     }
 
     let ctx;
-    
-    if (con) {
-      ctx = con.getConnection();
-      return await ctx.$queryRaw`select true where ${entity}=${value}`
-    };
 
-    return false;
+    // select true where ${entity}=${value}
+
+    const exist = await getRepository(entity).createQueryBuilder().where(`${field}=:field`, { field: value }).getCount()
+
+    return !exist;
   }
 
   defaultMessage(args: ValidationArguments) {

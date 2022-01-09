@@ -5,7 +5,7 @@ export class PrimaryKey {
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
-    id!: Number;
+    id!: number;
 
     @IsOptional()
     @IsString()

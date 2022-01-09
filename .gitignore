@@ -1,5 +1,4 @@
 .env
 /node_modules
 package-lock.json
-/client
-/ng-client
+/nile-vendor

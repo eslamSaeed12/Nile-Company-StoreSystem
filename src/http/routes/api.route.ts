@@ -69,6 +69,7 @@ export class ApiRouter extends Router_ {
     this.Router.get("/product", middlewareCollection(), GateGuard.Authroize("READ", "Product"), this.proudctCtr.index);
     this.Router.get("/product/:id", middlewareCollection(PrimaryKey), GateGuard.Authroize("READ", "Product"), this.proudctCtr.find);
     this.Router.post("/product", middlewareCollection(createProduct), GateGuard.Authroize("CREATE", "Product"), this.proudctCtr.create);
+    this.Router.post("/product/xst", middlewareCollection(), GateGuard.Authroize("CREATE", "Product"), this.proudctCtr.checkPname);
     this.Router.patch("/product", middlewareCollection(updateProduct), GateGuard.Authroize("UPDATE", "Product"), this.proudctCtr.update);
     this.Router.delete("/product", middlewareCollection(PrimaryKey), GateGuard.Authroize("DELETE", "Product"), this.proudctCtr.delete);
 
