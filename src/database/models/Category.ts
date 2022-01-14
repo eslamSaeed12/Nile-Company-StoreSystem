@@ -18,6 +18,9 @@ export class Category {
     @CreateDateColumn()
     createdAt!: Date;
 
+    @UpdateDateColumn()
+    updatedAt!: Date;
+
 
     @OneToMany(type => Product, p => p.category)
     products!: Array<Product>;

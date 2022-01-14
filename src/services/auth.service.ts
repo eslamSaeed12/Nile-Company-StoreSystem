@@ -12,6 +12,7 @@ export class authService {
   }: AuthLogin): Promise<User | null> {
     const usr = await this.userService.findByUsername(username);
 
+
     if (usr && bcrypt.compareSync(password, usr.password)) {
       return usr;
     }

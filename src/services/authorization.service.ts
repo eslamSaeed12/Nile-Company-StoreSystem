@@ -14,22 +14,22 @@ export type resources =
   | "ALL";
 
 enum roles {
-  "user" = "user",
   "admin" = "admin",
   "superUser" = "superuser",
 }
 
 export class Authorize {
-  static getAbilites(User_: User & { role: Role }) {
+  static getAbilites(User_: User) {
     type ap = Ability<[Abilites, resources]>;
     const appAbility = Ability as AbilityClass<ap>;
 
     let builder = new AbilityBuilder(appAbility);
 
-    let usrRole = User_.role;
+    let usrRole = User_?.role;
 
 
-    if (usrRole.title === roles.superUser) {
+
+    if (usrRole?.title === roles.superUser) {
 
       builder.can("CRUD", "ALL");
 

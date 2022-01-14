@@ -1,5 +1,4 @@
-import { hashSync } from "bcryptjs";
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, BeforeInsert } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
 import { Role } from "./Role";
 
 @Entity()
@@ -11,7 +10,7 @@ export class User {
     @Column({ unique: true })
     username!: string;
 
-    @Column({})
+    @Column()
     password!: string;
 
     @ManyToOne(type => Role, r => r.users)
@@ -25,10 +24,4 @@ export class User {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-
-
-    @BeforeInsert()
-    prepare() {
-        this.password = hashSync(this.password);
-    }
 }

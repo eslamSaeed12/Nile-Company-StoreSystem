@@ -14,13 +14,13 @@ export class Product {
     @Column()
     product_description!: string;// String
 
-    @Column()
+    @Column({ type: 'float' })
     quantity!: number;
 
-    @Column()
+    @Column({ type: 'float' })
     price!: number; //               Float
 
-    @Column()
+    @Column({ default: 'جم', nullable: true })
     price_unit!: string; //          String
 
     @Column({ nullable: true })

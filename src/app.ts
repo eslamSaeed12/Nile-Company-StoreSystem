@@ -40,3 +40,4 @@ process.on("uncaughtException", (err) => {
   Logger.error(err);
   process.exit(1);
 });
+

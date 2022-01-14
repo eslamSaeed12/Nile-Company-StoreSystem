@@ -30,15 +30,14 @@ export class GateGuard {
   public static Authroize(action: Abilites, resource: resources) {
     return async function (req: Request, res: Response, next: NextFunction) {
       try {
-        const RequestWithUser = <Request & { user: User & { role: Role } }>req;
+        const RequestWithUser = <Request & { user: User }>req;
         const userAbilitees = Authorize.getAbilites(RequestWithUser.user);
-        console.log(userAbilitees.rules)
         if (userAbilitees.can(action, resource) || userAbilitees.can("CRUD", resource) || userAbilitees.can("CRUD", "ALL")) {
           next();
           return;
         }
 
-        throw new Unauthorized("not allowed !");
+        throw new Unauthorized("غير مسموح !");
 
       } catch (err) {
         next(err)

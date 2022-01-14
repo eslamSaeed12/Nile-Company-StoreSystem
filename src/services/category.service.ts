@@ -1,17 +1,18 @@
 import { injectable } from "tsyringe";
-import { Connection, getRepository, Repository } from "typeorm";
+import { Connection, Repository } from "typeorm";
 import { Category } from "../database/models/Category";
+import { IsUniqueButNotMe } from "../utils/AlterUnique";
 @injectable()
 export class categoryService {
 
     private dbContext: Repository<Category>;
 
-    constructor(db:Connection) {
+    constructor(db: Connection) {
         this.dbContext = db.getRepository(Category)
     }
 
     async All() {
-        return await this.dbContext.find();
+        return await this.dbContext.find({});
     }
 
 
@@ -21,7 +22,7 @@ export class categoryService {
 
 
     async find(id: string) {
-        return await this.dbContext.findOneOrFail(id);
+        return await this.dbContext.findOneOrFail(id, { loadEagerRelations: true });
     }
 
     async insert(dto: any) {
@@ -39,4 +40,14 @@ export class categoryService {
     async delete(id: string) {
         return await this.dbContext.delete(id);
     }
+
+
+    async isUniqueButNotMe(id: string, fieldValue: any) {
+        return IsUniqueButNotMe(this.dbContext.createQueryBuilder('Category'), id, 'title', fieldValue);
+    }
+
+    async findByName(title: string) {
+        return await this.dbContext.createQueryBuilder('role').where('title = :name', { name: title }).execute()
+    }
+
 }

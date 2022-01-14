@@ -8,6 +8,18 @@ export class productController {
     constructor(protected service: productService) {
     }
 
+    isUniqueUpdate = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id, product_name } = req.params;
+            res.status(200).json(await this.service.isUniqueButNotMe(id, product_name));
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
+
+
     index = async (req: Request, res: Response, next: NextFunction) => {
         try {
             res.json(await this.service.All())
@@ -45,8 +57,8 @@ export class productController {
     create = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { categoryId, quantity, product_name, product_description, price_unit, price, notes } = req.body;
-
-            res.json(await this.service.insert({ categoryId, quantity, product_name, product_description, price_unit, price, notes }))
+            let x = await this.service.insert({ categoryId, quantity, product_name, product_description, price_unit, price, notes });
+            res.json(x)
         } catch (err) {
             next(err)
         }

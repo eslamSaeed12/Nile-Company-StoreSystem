@@ -1,5 +1,6 @@
 import { Transform } from "class-transformer";
 import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
+import { Exist } from "../../database/validators/Exist";
 import { Unique } from "../../database/validators/Unique";
 
 export class createCustomer {
@@ -24,6 +25,7 @@ export class createCustomer {
     customer_phoneNumber!: string;
 
     @IsBoolean()
+    @Transform(({ value }) => Boolean(value))
     isProvider!: boolean;
 
     @IsOptional()
@@ -40,6 +42,7 @@ export class updateCustomer {
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @Validate(Exist, [{ entity: 'customer' }])
     id!: number;
 
     @IsNotEmpty()
@@ -62,11 +65,12 @@ export class updateCustomer {
     customer_phoneNumber!: string;
 
     @IsBoolean()
+    @Transform(({ value }) => Boolean(value))
     isProvider!: boolean;
 
-    @IsNotEmpty()
     @IsString()
     @IsOptional()
+    @Transform(({ value }) => value === '' ? null : value)
     notes?: string;
 
 

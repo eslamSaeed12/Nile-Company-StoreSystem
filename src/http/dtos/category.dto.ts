@@ -12,9 +12,6 @@ export class createCategory {
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
-    @MaxLength(255)
-    @MinLength(4)
     notes?: string;
 
 
@@ -30,7 +27,6 @@ export class updateCategory {
     id?: number;
 
     @IsString()
-    @IsNotEmpty()
     @MaxLength(255)
     @MinLength(4)
     @Validate(Unique, [{ field: "title", entity: "Category" }])

@@ -9,6 +9,35 @@ export class shipperController {
     constructor(protected service: shipperService) {
     }
 
+
+    findByName = async (req: any, res: any, next: NextFunction) => {
+        try {
+            const { shipper_name } = req.params;
+
+            const isExist = await this.service.findByName(shipper_name);
+
+            if (isExist?.length) {
+                res.json(true);
+            } else {
+                res.json(false)
+            }
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
+    isUniqueUpdate = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id, shipper_name } = req.params;
+            res.status(200).json(await this.service.isUniqueButNotMe(id, shipper_name));
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
+
     index = async (req: Request, res: Response, next: NextFunction) => {
         try {
             res.json(await this.service.All())

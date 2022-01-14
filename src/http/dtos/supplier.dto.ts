@@ -1,5 +1,6 @@
 import { Transform } from "class-transformer";
 import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
+import { Exist } from "../../database/validators/Exist";
 import { Unique } from "../../database/validators/Unique";
 
 export class createSupplier {
@@ -8,7 +9,7 @@ export class createSupplier {
     @IsString()
     @MaxLength(255)
     @MinLength(4)
-    @Validate(Unique, [{ field: "Supplier_name", entity: "Supplier" }])
+    @Validate(Unique, [{ field: "Supplier.Supplier_name", entity: "supplier" }])
     Supplier_name!: string;
 
 
@@ -44,12 +45,13 @@ export class updateSupplier {
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @Validate(Exist, [{ entity: 'Supplier' }])
     id?: number;
 
     @IsString()
     @MaxLength(255)
     @MinLength(4)
-    @Validate(Unique, [{ field: "Supplier_name", entity: "Supplier" }])
+    @Validate(Unique, [{ field: "Supplier.Supplier_name", entity: "Supplier" }])
     Supplier_name!: string;
 
 

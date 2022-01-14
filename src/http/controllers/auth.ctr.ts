@@ -30,7 +30,9 @@ export class AuthController {
     login = async (req: any, res: any, next: NextFunction) => {
         try {
             const { username, password } = req.body;
-            const authenticated = <User & { role: Role }>await this.service.authenticate({ username, password });
+            const authenticated = await this.service.authenticate({ username, password });
+
+
 
             if (authenticated) {
 
@@ -39,7 +41,7 @@ export class AuthController {
                     role: authenticated.role,
                     username: authenticated.username
                 }), {
-                    expires: Date.now() + 86400,
+                    maxAge: Date.now() + 86400,
                     httpOnly: process.env.NODE_ENV?.toUpperCase() === "DEVELOPMENT",
                     secure: process.env.NODE_ENV?.toUpperCase() === "PRODUCTION",
                     sameSite: true
@@ -56,7 +58,7 @@ export class AuthController {
                 return;
             }
 
-            throw new NotFound("user ceredentials not valid");
+            throw new NotFound("بيانات الدخول غير صحيحة !");
 
         } catch (err) {
             next(err);

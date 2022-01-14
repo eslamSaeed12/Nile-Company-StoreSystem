@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 import { Connection, getRepository, Repository } from "typeorm";
 import { Order } from "../database/models/Order";
+import { IsUniqueButNotMe } from "../utils/AlterUnique";
 
 @injectable()
 export class orderService {
@@ -8,7 +9,7 @@ export class orderService {
 
     private dbContext: Repository<Order>;
 
-    constructor(db:Connection) {
+    constructor(db: Connection) {
         this.dbContext = db.getRepository(Order);
     }
 
@@ -93,4 +94,5 @@ export class orderService {
     async delete(id: string) {
         return await this.dbContext.delete(id)
     }
+
 }

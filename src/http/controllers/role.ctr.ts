@@ -9,6 +9,34 @@ export class roleController {
     constructor(protected service: roleService) {
     }
 
+
+    findByName = async (req: any, res: any, next: NextFunction) => {
+        try {
+            const { title } = req.params;
+
+            const isExist = await this.service.findByName(title);
+
+            if (isExist?.length) {
+                res.json(true);
+            } else {
+                res.json(false)
+            }
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
+    isUniqueUpdate = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id, title } = req.params;
+            res.status(200).json(await this.service.isUniqueButNotMe(id, title));
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
     index = async (req: Request, res: Response, next: NextFunction) => {
         try {
             res.json(await this.service.All())

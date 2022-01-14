@@ -19,14 +19,14 @@ export class JwtCheckerMiddleware extends middlewre {
         : null;
 
       if (!req.cookies["X_META_JWT"]) {
-        throw new BadRequest("you arent logined yet !");
+        throw new BadRequest("لم تقم بالتسجيل بعد");
       }
 
       if (!this.jwtService_.validate(token)) {
-        throw new Unauthorized("not valid authentication token");
+        throw new Unauthorized("الهويه غير سليمة برجاء تسجيل الدخول");
       } else {
         const decoded = <User>await this.jwtService_.decode(req.cookies["X_META_JWT"]);
-        const loginedUser = await this.userService.find(decoded.id.toString());
+        const loginedUser = <User> await this.userService.findByUsername(decoded.username);
         req.user = loginedUser;
         next();
       }

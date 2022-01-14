@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 import { Connection, getRepository, Repository } from "typeorm";
 import { Shipper } from "../database/models/Shipper";
+import { IsUniqueButNotMe } from "../utils/AlterUnique";
 
 @injectable()
 export class shipperService {
@@ -8,7 +9,7 @@ export class shipperService {
 
     private dbContext: Repository<Shipper>;
 
-    constructor(db:Connection) {
+    constructor(db: Connection) {
         this.dbContext = db.getRepository(Shipper);
     }
 
@@ -46,5 +47,15 @@ export class shipperService {
 
     async delete(id: string) {
         return await this.dbContext.delete(id)
+    }
+
+
+    async findByName(shipper_name: string) {
+        return await this.dbContext.createQueryBuilder().where('shipper_name = :name', { name: shipper_name }).execute()
+    }
+
+
+    async isUniqueButNotMe(id: string, fieldValue: any) {
+        return IsUniqueButNotMe(this.dbContext.createQueryBuilder('Shipper'), id, 'shipper_name', fieldValue);
     }
 }

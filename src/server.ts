@@ -1,6 +1,6 @@
 import express from "express";
 import helmet from "helmet";
-import { injectAll, singleton } from "tsyringe";
+import { container, injectAll, singleton } from "tsyringe";
 import { join } from "path";
 import cors from "cors";
 import os from "os";
@@ -16,6 +16,7 @@ import hpp from "hpp";
 import { Logger } from "./utils/Logger";
 import timeout from "connect-timeout";
 import { filter } from "./modules/IMiddleware";
+import { Context } from "./modules/ctxHook";
 const isDev = process.env.NODE_ENV !== "production";
 const listRoutes = require("express-list-routes");
 
@@ -59,12 +60,12 @@ export class server {
     this.server.use(bodyParser.json());
     this.server.use(bodyParser.urlencoded());
     this.server.use(hpp());
-   /* this.server.use(
-      Limiter({
-        windowMs: 15 * 60 * 1000,
-        max: 100,
-      })
-    );*/
+    /* this.server.use(
+       Limiter({
+         windowMs: 15 * 60 * 1000,
+         max: 100,
+       })
+     );*/
     this.server.use(express.static(join(__dirname, "public")));
     this.server.use(
       cors({
@@ -115,6 +116,18 @@ export class server {
     this.registerExpress();
 
 
+    this.server.use((req, res, next) => {
+      try {
+        const ctx = { request: req, response: res };
+        container.register(Context, { useValue: ctx })
+        next()
+      } catch (err) {
+        next(err)
+      }
+    })
+
+
+
     // register middlewares
     this.RegisterMiddlewares();
 
@@ -122,12 +135,18 @@ export class server {
     // register routers
     this.RegisterRouters();
 
+
+
     if (isDev) {
       this.listRoutes();
     }
 
     // register exception filters
     this.registerExceptionFilters();
+
+    // register ctx 
+
+
   }
 
   public serve() {

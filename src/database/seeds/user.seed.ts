@@ -3,11 +3,11 @@ import { Seeder } from "typeorm-seeding";
 import { Role } from "../models/Role";
 import { User } from "../models/User";
 
-export default class CreatePets implements Seeder {
+export default class CreateUsers implements Seeder {
     public async run(factory: any, connection: Connection): Promise<any> {
-        const roles = await connection.getRepository(Role).find();
+        const repo = connection.getRepository(User);
 
-        await connection.getRepository(User).upsert([
+        const res = await repo.upsert([
             {
                 username: 'ADMIN',
                 password: 'ADMIN',
@@ -16,9 +16,10 @@ export default class CreatePets implements Seeder {
             {
                 username: 'super',
                 password: 'super',
-                role: await connection.getRepository(Role).findOne({ where: { title: 'superuser' } })
+                role: await connection.getRepository(Role).findOne({ where: { title: 'superuser' } }),
 
             }
-        ], ['username'])
+        ], ['username']);
+
     }
 }

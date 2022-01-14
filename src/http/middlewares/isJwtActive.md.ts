@@ -16,7 +16,7 @@ export class isJwtActiveMiddleware extends middlewre {
         req.cookies["X_META_TOKEN"] &&
         this.jwtService_.validate(req.cookies["X_META_TOKEN"])
       ) {
-        throw new BadRequest("you already signed in");
+        throw new BadRequest("انت متصل بالفعل !");
       } else {
         next();
       }

@@ -1,10 +1,11 @@
-import { container, inject, injectable } from "tsyringe";
+import { container, injectable } from "tsyringe";
 import {
   ValidatorConstraintInterface,
   ValidatorConstraint,
   ValidationArguments,
 } from "class-validator";
-import { getRepository, QueryBuilder } from "typeorm";
+import { Connection } from "typeorm";
+import { UseCtx } from "../../modules/ctxHook";
 
 export interface IUniqueCustomArgs {
   entity: string;
@@ -29,13 +30,27 @@ export class Unique implements ValidatorConstraintInterface {
       );
     }
 
-    let ctx;
+    let ctx = container.resolve(Connection);
 
     // select true where ${entity}=${value}
 
-    const exist = await getRepository(entity).createQueryBuilder().where(`${field}=:field`, { field: value }).getCount()
+    const request = UseCtx();
 
-    return !exist;
+    let exist;
+    const id = request?.request?.body?.id;
+
+    if (id) {
+      exist = await ctx.getRepository(entity)
+      .createQueryBuilder()
+      .where(`id != :id `, { id })
+      .andWhere(`${field}=:field`, { field: value })
+      .execute()
+    } else {
+      exist = await ctx.getRepository(entity).createQueryBuilder().where(`${field}=:field`, { field: value }).execute();
+    }
+
+
+    return !exist.length;
   }
 
   defaultMessage(args: ValidationArguments) {

@@ -1,5 +1,6 @@
 import { Transform } from "class-transformer";
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, validate, Validate } from "class-validator";
+import { Exist } from "../../database/validators/Exist";
 import { Unique } from "../../database/validators/Unique";
 
 export class createProduct {
@@ -18,13 +19,13 @@ export class createProduct {
     product_description!: string;
 
     @IsNotEmpty()
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     quantity!: number;
 
     @IsNotEmpty()
     @IsNumber()
-    @Transform(({ value }) => parseInt(value))
+    @Transform(({ value }) => parseFloat(value))
     price!: number;
 
 
@@ -37,9 +38,9 @@ export class createProduct {
 
     @IsNotEmpty()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     categoryId!: number;
 
-    @IsNotEmpty()
     @IsString()
     @IsOptional()
     notes?: string;
@@ -54,6 +55,7 @@ export class updateProduct {
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @Validate(Exist, [{ entity: 'Product' }])
     id?: number;
 
     @IsNotEmpty()
@@ -70,21 +72,21 @@ export class updateProduct {
     product_description!: string;
 
     @IsNotEmpty()
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     quantity!: number;
 
     @IsNotEmpty()
     @IsNumber()
-    @Transform(({ value }) => parseInt(value))
+    @Transform(({ value }) => parseFloat(value))
     price!: number;
 
 
-    @IsNotEmpty()
     @IsString()
     @MaxLength(25)
     @MinLength(2)
     @IsOptional()
+    @IsNotEmpty()
     price_unit?: string;
 
     @IsNotEmpty()
@@ -92,8 +94,8 @@ export class updateProduct {
     @Transform(({ value }) => parseInt(value))
     categoryId!: number;
 
-    @IsString()
     @IsOptional()
+    @IsString()
     notes?: string;
 
 

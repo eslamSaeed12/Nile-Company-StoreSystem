@@ -10,7 +10,7 @@ export class AuthenticatedMiddleware extends middlewre {
   use = (req: any, res: any, next: NextFunction) => {
     try {
       if (!req.user && !req.cookies["X_META_JWT"]) {
-        throw new Unauthorized("you arent logined in ");
+        throw new Unauthorized("لم تقم بالتسجيل بعد ! ");
       } else {
         next();
       }

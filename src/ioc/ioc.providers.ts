@@ -9,6 +9,8 @@ import { ApiRouter } from "../http/routes/api.route";
 import { filter, middlewre } from "../modules/IMiddleware";
 import { Router_ } from "../modules/IRouter";
 import { ContainedType, useContainer, ContainerInterface } from "typeorm";
+import { UnknownErrorFilter } from "../http/filters/UnknownErrorFilter";
+import { TypeormErrorFilter } from "../http/filters/TypeormFilter";
 
 //import { TaskRunner } from "../modules/ITask";
 
@@ -27,5 +29,7 @@ container.register(middlewre.token, AuthenticatedMiddleware);
 container.register(middlewre.token, isJwtActiveMiddleware);
 container.register(filter.token, JwtErrorFilter);
 container.register(filter.token, BodyGuardFilter_);
+container.register(filter.token, TypeormErrorFilter);
 container.register(filter.token, HtppExceptionFilter);
+container.register(filter.token, UnknownErrorFilter);
 // container.register(TaskRunner.token)

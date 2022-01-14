@@ -1,19 +1,20 @@
 import { injectable } from "tsyringe";
-import { Connection, getRepository, Repository } from "typeorm";
+import { Connection, Repository } from "typeorm";
 import { Product } from "../database/models/Product";
+import { IsUniqueButNotMe } from "../utils/AlterUnique";
 
 @injectable()
 export class productService {
 
     private dbContext: Repository<Product>;
 
-    constructor(db:Connection) {
+    constructor(db: Connection) {
         this.dbContext = db.getRepository(Product)
     }
 
 
     async All() {
-        return await this.dbContext.find();
+        return await this.dbContext.find({ relations: ['category'] });
     }
 
     async count() {
@@ -22,21 +23,23 @@ export class productService {
 
 
     async find(id: string) {
-        return await this.dbContext.findOneOrFail(id);
+        return await this.dbContext.findOneOrFail(id, { relations: ['category'] });
     }
 
     async insert(dto: any) {
-        return await this.dbContext.insert({
+        const created = this.dbContext.create({
             product_name: dto.product_name,
             price: dto.price,
-            price_unit: dto.price_unit,
+            price_unit: dto?.price_unit,
             product_description: dto.product_description,
             quantity: dto.quantity,
             category: {
                 id: dto.categoryId
             },
-            notes: dto.notes,
-        })
+            notes: dto.notes
+        });
+
+        return await this.dbContext.save(created);
     }
 
     async update(dto: any) {
@@ -59,6 +62,11 @@ export class productService {
 
 
     async checkProductName(product_name: string) {
-        return await this.dbContext.findAndCount({ product_name });
+        return await this.dbContext.findOne({ product_name });
+    }
+
+
+    async isUniqueButNotMe(id: string, fieldValue: any) {
+        return IsUniqueButNotMe(this.dbContext.createQueryBuilder('Product'), id, 'product_name', fieldValue);
     }
 }

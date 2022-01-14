@@ -7,7 +7,36 @@ export class userController {
 
 
     constructor(protected service: userService) {
-        
+
+    }
+
+
+    findByName = async (req: any, res: any, next: NextFunction) => {
+        try {
+            const { username } = req.params;
+
+            const isExist = await this.service.findByName(username);
+
+            if (isExist?.length) {
+                res.json(true);
+            } else {
+                res.json(false)
+            }
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
+
+
+    isUniqueUpdate = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id, username } = req.params;
+            res.status(200).json(await this.service.isUniqueButNotMe(id, username));
+        } catch (err) {
+            next(err)
+        }
     }
 
     index = async (req: Request, res: Response, next: NextFunction) => {
@@ -40,10 +69,8 @@ export class userController {
 
     update = async (req: any, res: any, next: NextFunction) => {
         try {
-            const { id, username, password, roleId } = req.body;
-            const isPasswordChanged = password !== (await this.service.find(id))?.password;
-
-            res.json(await this.service.update({ id: parseInt(id), username, password, roleId }, isPasswordChanged))
+            const { id, username, password, newPassword, roleId } = req.body;
+            res.json(await this.service.update({ id, username, password, newPassword, roleId }))
         } catch (err) {
             next(err)
         }
