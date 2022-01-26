@@ -1,32 +1,42 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate, ValidateNested } from "class-validator";
+import { Exist } from "../../database/validators/Exist";
 
-export class createOrder {
 
-    @IsNotEmpty()
-    @IsEnum(["PENDING", "FAIL", "DONE"])
-    state!: string;
-
+class prod {
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
     quantity!: number;
 
     @IsNotEmpty()
-    @IsNumber()
+    @IsInt()
     @Transform(({ value }) => parseInt(value))
-    price!: number;
+    @Validate(Exist, [{ entity: 'product' }])
+    productId!: number
+}
+
+export class createOrder {
+
+    @IsNotEmpty()
+    @IsEnum([1, 2, 3, 4])
+    state!: number;
 
     @IsNotEmpty()
     @IsNumber()
-    @Transform(({ value }) => parseInt(value))
-    total!: number;
-
+    @Transform(({ value }) => parseFloat(value))
+    paid!: number;
 
     @IsNotEmpty()
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
+    total_price!: number;
+
+
     @IsString()
     @MaxLength(25)
     @MinLength(2)
+    @IsOptional()
     paindUnit?: string;
 
     @IsOptional()
@@ -46,8 +56,7 @@ export class createOrder {
 
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => Number)
-    products!: Array<Number>;
+    products!: Array<prod>;
 
     @IsNotEmpty()
     @IsString()
@@ -59,37 +68,35 @@ export class createOrder {
     @IsOptional()
     csrf_token?: string;
 }
+
 
 export class updateOrder {
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @Validate(Exist, [{ entity: 'order' }])
     id?: number;
 
-    @IsNotEmpty()
-    @IsEnum(["PENDING", "FAIL", "DONE"])
-    state!: string;
 
     @IsNotEmpty()
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
-    quantity!: number;
+    @IsEnum([1, 2, 3, 4])
+    state!: number;
 
     @IsNotEmpty()
     @IsNumber()
-    @Transform(({ value }) => parseInt(value))
-    price!: number;
+    @Transform(({ value }) => parseFloat(value))
+    paid!: number;
 
     @IsNotEmpty()
     @IsNumber()
-    @Transform(({ value }) => parseInt(value))
-    total!: number;
+    @Transform(({ value }) => parseFloat(value))
+    total_price!: number;
 
 
-    @IsNotEmpty()
     @IsString()
     @MaxLength(25)
     @MinLength(2)
+    @IsOptional()
     paindUnit?: string;
 
     @IsOptional()
@@ -104,31 +111,21 @@ export class updateOrder {
 
     @IsOptional()
     @IsInt()
+    @Transform(({ value }) => parseInt(value))
     customerId!: number;
 
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => Number)
-    products!: Array<Number>;
+    products!: Array<prod>;
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
+    @IsOptional()
     notes?: string;
+
 
 
     @IsString()
     @IsOptional()
     csrf_token?: string;
-}
-
-export class order_sync {
-    @IsOptional()
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
-    productId!: number;
-    
-    @IsOptional()
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
-    orderId!: number;
 }

@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { Category } from "./Category";
 import { Order } from "./Order";
+import { Order_Product } from "./Order_Product";
 
 @Entity()
 export class Product {
@@ -35,7 +36,6 @@ export class Product {
     @ManyToOne(type => Category, c => c.products)
     category!: Category;
 
-    // many to many orders
-    @ManyToMany(() => Order, o => o.products)
-    orders?: Order[]
+    @OneToMany(type => Order_Product, o => o.product)
+    orders!: Order_Product[];
 }

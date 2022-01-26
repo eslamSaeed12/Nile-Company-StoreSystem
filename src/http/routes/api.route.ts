@@ -12,11 +12,12 @@ import { roleController } from "../controllers/role.ctr";
 import { shipperController } from "../controllers/shipper.ctr";
 import { supplierController } from "../controllers/supplier.ctr";
 import { userController } from "../controllers/user.ctr";
+import { UtilsController } from "../controllers/utils.ctr";
 import { AuthLogin } from "../dtos/Auth.dto";
 import { createCategory, updateCategory } from "../dtos/category.dto";
 import { PrimaryKey } from "../dtos/common.dto";
 import { createCustomer, updateCustomer } from "../dtos/customer.dto";
-import { createOrder, order_sync, updateOrder } from "../dtos/order.dto";
+import { updateOrder, createOrder } from "../dtos/order.dto";
 import { createProduct, updateProduct } from "../dtos/product.dto";
 import { createRole, updateRole } from "../dtos/Role.dto";
 import { createShipper, updateShipper } from "../dtos/shipper.dto";
@@ -43,6 +44,16 @@ export class ApiRouter extends Router_ {
     const withoutValidation = [this.authenticated.use, this.jwtChecker.use];
 
     const middlewareCollection = (validationBody?: ClassConstructor<any>) => validationBody ? withValidation(validationBody) : withoutValidation;
+
+
+    // utils
+
+    this.Router.get('/utils/stats', middlewareCollection(), this.utilsCtr.getStats);
+    this.Router.get('/utils/shippers', middlewareCollection(), this.utilsCtr.topShippers);
+    this.Router.get('/utils/customers', middlewareCollection(), this.utilsCtr.topCustomers);
+    this.Router.get('/utils/categories', middlewareCollection(), this.utilsCtr.topFiveCategories);
+    this.Router.get('/utils/products', middlewareCollection(), this.utilsCtr.topProducts);
+    this.Router.get('/utils/suppliers', middlewareCollection(), this.utilsCtr.topSuppliers);
 
     // router middlewares
     this.Router.get("/role", middlewareCollection(), GateGuard.Authroize("READ", "Role"), this.roleCtr.index);
@@ -95,8 +106,6 @@ export class ApiRouter extends Router_ {
     this.Router.post("/order", middlewareCollection(createOrder), GateGuard.Authroize("CREATE", "Order"), this.orderCtr.create);
     this.Router.patch("/order", middlewareCollection(updateOrder), GateGuard.Authroize("UPDATE", "Order"), this.orderCtr.update);
     this.Router.delete("/order", middlewareCollection(PrimaryKey), GateGuard.Authroize("DELETE", "Order"), GateGuard.Authroize("DELETE", "Order"), this.orderCtr.delete);
-    this.Router.post("/order/:orderId/:productId", middlewareCollection(order_sync), GateGuard.Authroize("CREATE", "Order"), this.orderCtr.attachProduct);
-    this.Router.delete("/order/:orderId/:productId", middlewareCollection(order_sync), GateGuard.Authroize("DELETE", "Order"), this.orderCtr.attachProduct);
 
     // user routes
     this.Router.get("/user", middlewareCollection(), GateGuard.Authroize("READ", "User"), this.userCtr.index)
@@ -124,7 +133,7 @@ export class ApiRouter extends Router_ {
 
 
 
-  constructor(private authenticated: AuthenticatedMiddleware, private jwtChecker: JwtCheckerMiddleware, private cusotmerCtr: customerController, private authCtr: AuthController, private categoryCtr: CategoryController, private userCtr: userController, private orderCtr: orderController, private supplierCtr: supplierController, private proudctCtr: productController, private shipperCtr: shipperController, private roleCtr: roleController, private shiperCtr: shipperController) {
+  constructor(private utilsCtr: UtilsController, private authenticated: AuthenticatedMiddleware, private jwtChecker: JwtCheckerMiddleware, private cusotmerCtr: customerController, private authCtr: AuthController, private categoryCtr: CategoryController, private userCtr: userController, private orderCtr: orderController, private supplierCtr: supplierController, private proudctCtr: productController, private shipperCtr: shipperController, private roleCtr: roleController, private shiperCtr: shipperController) {
     super()
   }
 }

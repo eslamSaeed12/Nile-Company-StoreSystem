@@ -1,98 +1,120 @@
 import { injectable } from "tsyringe";
-import { Connection, getRepository, Repository } from "typeorm";
+import { Connection, EntityManager, getRepository, Repository } from "typeorm";
 import { Order } from "../database/models/Order";
-import { IsUniqueButNotMe } from "../utils/AlterUnique";
-
+import { Order_Product } from "../database/models/Order_Product";
+import _ from 'lodash'
 @injectable()
 export class orderService {
 
 
-    private dbContext: Repository<Order>;
+    private OrderCtx: Repository<Order>;
+    private OrderPrdctCtx: Repository<Order_Product>;
+    private mgr!: EntityManager;
 
     constructor(db: Connection) {
-        this.dbContext = db.getRepository(Order);
+        this.OrderCtx = db.getRepository(Order);
+        this.OrderPrdctCtx = db.getRepository(Order_Product);
     }
 
 
     async All() {
-        return await this.dbContext.find();
+        return await this.OrderCtx.find({ relations: ['shipper', 'supplier', 'customer', 'products'] });
     }
 
     async count() {
-        return await this.dbContext.count();
+        return await this.OrderCtx.count();
     }
 
 
     async find(id: string) {
-        return await this.dbContext.findOneOrFail(id);
+        return await this.OrderCtx.findOneOrFail(id, { relations: ['shipper', 'supplier', 'customer', 'products'] });
     }
 
     async insert(dto: any) {
-        let order = await this.dbContext.insert({
+
+        let order = this.OrderCtx.create({
             customer: {
                 id: dto.customerId
             },
             shipper: {
                 id: dto.shipperId
             },
-            notes: dto.notes,
-            paindUnit: dto.paidUnit,
-            price: dto.price,
-            total: dto.total,
-            quantity: dto.quantity,
             supplier: {
                 id: dto.supplierId
             },
+            notes: dto.notes,
+            paindUnit: dto.paidUnit,
+            paid: dto.paid,
+            total_price: dto.total_price,
+            state: dto.state,
         });
 
-        //let mappedOrderProducts = dto.products.map((p: number) => ({ productId: p, orderId: order.id }));
 
-        //await this.dbContext.productsOnOrders.createMany({ data: mappedOrderProducts });
+        // save new order
+        await this.OrderCtx.save(order);
 
-        return order;
+        const mappedProds = dto.products.map((p: any) => ({ ...p, orderId: order.id }))
+
+        // create order products
+        const prods = this.OrderPrdctCtx.create(mappedProds);
+
+        // save order products
+        let products = await this.OrderPrdctCtx.save(prods, { reload: true });
+
+
+        return { ...order, products };
     }
 
     async update(dto: any) {
-        return await this.dbContext.update(dto.id, {
+
+        await this.OrderCtx.update(dto.id, {
             customer: {
                 id: dto.customerId
             },
             shipper: {
                 id: dto.shipperId
             },
-            notes: dto.notes,
-            paindUnit: dto.paidUnit,
-            price: dto.price,
-            total: dto.total,
-            quantity: dto.quantity,
             supplier: {
                 id: dto.supplierId
             },
+            notes: dto.notes,
+            paindUnit: dto.paidUnit,
+            paid: dto.paid,
+            total_price: dto.total_price,
+            state: dto.state,
         });
+
+        let _result_ = await this.syncOrderProducts(dto.id, dto.products)
+
+        return _result_;
+
     }
 
-    async removeProduct(dto: any) {
-        /*return await this.dbContext.productsOnOrders.delete({
-            where: {
-                productId_orderId: {
-                    orderId: dto.orderId,
-                    productId: dto.productId
-                }
-            }
-        });*/
-    }
+    async syncOrderProducts(orderId: number, products_: Array<any>) {
 
-    async addProduct(dto: any) {
-        /*  return await this.dbContext.productsOnOrders.create({
-              data: {
-                  orderId: dto.orderId,
-                  productId: dto.productId
-              }
-          });*/
+
+        if (!products_.length) {
+            return await this.OrderPrdctCtx.createQueryBuilder().
+                delete().
+                from(Order_Product)
+                .where('orderId = :orderId', { orderId })
+                .execute()
+        }
+
+
+        const stringfiedProds = products_.map((p: any) => (p.productId)).join(',');
+
+        await this.OrderPrdctCtx.createQueryBuilder().delete().from(Order_Product).where('orderId = :orderId', { orderId }).andWhere(`productId NOT IN(${stringfiedProds})`).execute();
+
+        const mappedReqProds = products_.map((p) => ({ ...p, orderId }));
+
+        const syncingNewProds = await this.OrderPrdctCtx.upsert(mappedReqProds, ['orderId', 'productId']);
+
+        return syncingNewProds;
     }
 
     async delete(id: string) {
-        return await this.dbContext.delete(id)
+        return await this.OrderCtx.delete(id)
     }
 
 }

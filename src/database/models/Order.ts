@@ -1,6 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable, OneToMany, JoinColumn } from "typeorm";
 import { Customer } from "./Customer";
-import { Product } from "./Product";
+import { Order_Product } from "./Order_Product";
 import { Shipper } from "./Shipper";
 import { Supplier } from "./Supplier";
 
@@ -13,7 +13,7 @@ export enum ORDER_STATE {
 }
 
 export enum PAID_UNIT {
-    EGP
+    EGP = 'جم'
 }
 
 @Entity()
@@ -26,17 +26,13 @@ export class Order {
     state!: ORDER_STATE;
 
     @Column({})
-    quantity!: number;
+    paid!: number;
 
     @Column({})
-    price!: number;
+    total_price!: number;
 
-    @Column({})
-    total!: number;
-
-    @Column({ enum: PAID_UNIT })
+    @Column({ enum: PAID_UNIT, default: PAID_UNIT.EGP, nullable: true })
     paindUnit!: PAID_UNIT;
-
 
     @Column({ nullable: true })
     notes!: string;  //   
@@ -47,7 +43,6 @@ export class Order {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-
     @ManyToOne(type => Supplier, s => s.suppliedOrders)
     supplier?: Supplier
 
@@ -57,9 +52,7 @@ export class Order {
     @ManyToOne(type => Customer, s => s?.orders)
     customer?: Customer
 
-    // many to many orders
-    @ManyToMany(() => Product, o => o.orders)
-    @JoinTable()
-    products?: Product[]
+    @OneToMany(type => Order_Product, p => p.order)
+    products!: Order_Product[];
 
 }
