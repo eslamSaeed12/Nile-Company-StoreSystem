@@ -1,6 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { Category } from "./Category";
-import { Order } from "./Order";
 import { Order_Product } from "./Order_Product";
 
 @Entity()

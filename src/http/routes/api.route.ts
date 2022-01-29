@@ -8,6 +8,7 @@ import { CategoryController } from "../controllers/category.ctr";
 import { customerController } from "../controllers/customer.ctr";
 import { orderController } from "../controllers/order.ctr";
 import { productController } from "../controllers/product.ctr";
+import { profileController } from "../controllers/Profile.ctr";
 import { roleController } from "../controllers/role.ctr";
 import { shipperController } from "../controllers/shipper.ctr";
 import { supplierController } from "../controllers/supplier.ctr";
@@ -19,6 +20,7 @@ import { PrimaryKey } from "../dtos/common.dto";
 import { createCustomer, updateCustomer } from "../dtos/customer.dto";
 import { updateOrder, createOrder } from "../dtos/order.dto";
 import { createProduct, updateProduct } from "../dtos/product.dto";
+import { _getToken_, _UpdateProfile_ } from "../dtos/profile.dto";
 import { createRole, updateRole } from "../dtos/Role.dto";
 import { createShipper, updateShipper } from "../dtos/shipper.dto";
 import { createSupplier, updateSupplier } from "../dtos/supplier.dto";
@@ -46,6 +48,11 @@ export class ApiRouter extends Router_ {
     const middlewareCollection = (validationBody?: ClassConstructor<any>) => validationBody ? withValidation(validationBody) : withoutValidation;
 
 
+
+    // profile
+    this.Router.post('/profile/:id', middlewareCollection(_getToken_), this.profileCtr.getToken);
+    this.Router.patch('/profile', middlewareCollection(_UpdateProfile_), this.profileCtr.update);
+
     // utils
 
     this.Router.get('/utils/stats', middlewareCollection(), this.utilsCtr.getStats);
@@ -54,6 +61,7 @@ export class ApiRouter extends Router_ {
     this.Router.get('/utils/categories', middlewareCollection(), this.utilsCtr.topFiveCategories);
     this.Router.get('/utils/products', middlewareCollection(), this.utilsCtr.topProducts);
     this.Router.get('/utils/suppliers', middlewareCollection(), this.utilsCtr.topSuppliers);
+    this.Router.get('/utils/funds', middlewareCollection(), this.utilsCtr.getLastYearFunds);
 
     // router middlewares
     this.Router.get("/role", middlewareCollection(), GateGuard.Authroize("READ", "Role"), this.roleCtr.index);
@@ -133,7 +141,7 @@ export class ApiRouter extends Router_ {
 
 
 
-  constructor(private utilsCtr: UtilsController, private authenticated: AuthenticatedMiddleware, private jwtChecker: JwtCheckerMiddleware, private cusotmerCtr: customerController, private authCtr: AuthController, private categoryCtr: CategoryController, private userCtr: userController, private orderCtr: orderController, private supplierCtr: supplierController, private proudctCtr: productController, private shipperCtr: shipperController, private roleCtr: roleController, private shiperCtr: shipperController) {
+  constructor(private utilsCtr: UtilsController, private profileCtr: profileController, private authenticated: AuthenticatedMiddleware, private jwtChecker: JwtCheckerMiddleware, private cusotmerCtr: customerController, private authCtr: AuthController, private categoryCtr: CategoryController, private userCtr: userController, private orderCtr: orderController, private supplierCtr: supplierController, private proudctCtr: productController, private shipperCtr: shipperController, private roleCtr: roleController, private shiperCtr: shipperController) {
     super()
   }
 }

@@ -30,7 +30,6 @@ export class productService {
         const created = this.dbContext.create({
             product_name: dto.product_name,
             price: dto.price,
-            price_unit: dto?.price_unit,
             product_description: dto.product_description,
             quantity: dto.quantity,
             category: {
@@ -45,7 +44,6 @@ export class productService {
     async update(dto: any) {
         return await this.dbContext.update(dto.id, {
             price: dto.price,
-            price_unit: dto.price_unit,
             product_description: dto.product_description,
             product_name: dto.product_name,
             quantity: dto.quantity,

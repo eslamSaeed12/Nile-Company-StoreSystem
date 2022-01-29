@@ -41,7 +41,7 @@ export class AuthController {
                     role: authenticated.role,
                     username: authenticated.username
                 }), {
-                    maxAge: Date.now() + 86400,
+                    expired: Date.now() + 86400,
                     httpOnly: process.env.NODE_ENV?.toUpperCase() === "DEVELOPMENT",
                     secure: process.env.NODE_ENV?.toUpperCase() === "PRODUCTION",
                     sameSite: true

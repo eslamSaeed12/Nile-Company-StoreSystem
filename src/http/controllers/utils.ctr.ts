@@ -52,7 +52,7 @@ export class UtilsController {
         }
     }
 
-    topShippers = async (eq: Request, res: Response, next: NextFunction) => {
+    topShippers = async (req: Request, res: Response, next: NextFunction) => {
         try {
             res.json(await this.service.getTopFiveShippers())
         } catch (err) {
@@ -61,6 +61,12 @@ export class UtilsController {
     }
 
 
-
+    getLastYearFunds = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            res.json(await this.service.getFundsOflastYear())
+        } catch (err) {
+            next(err)
+        }
+    }
 
 }

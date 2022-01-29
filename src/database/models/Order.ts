@@ -12,10 +12,6 @@ export enum ORDER_STATE {
     DONE,
 }
 
-export enum PAID_UNIT {
-    EGP = 'جم'
-}
-
 @Entity()
 export class Order {
 
@@ -25,14 +21,12 @@ export class Order {
     @Column({ enum: ORDER_STATE })
     state!: ORDER_STATE;
 
-    @Column({})
-    paid!: number;
+    // percent
+    @Column('decimal')
+    discount!: number;
 
-    @Column({})
-    total_price!: number;
-
-    @Column({ enum: PAID_UNIT, default: PAID_UNIT.EGP, nullable: true })
-    paindUnit!: PAID_UNIT;
+    @Column('decimal')
+    cost!: number;
 
     @Column({ nullable: true })
     notes!: string;  //   

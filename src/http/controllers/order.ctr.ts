@@ -29,9 +29,8 @@ export class orderController {
 
     create = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { customerId, shipperId, supplierId, state, products, paid, total_price, paindUnit, notes } = req.body;
-
-            res.json(await this.service.insert({ customerId, state, shipperId, paid, supplierId, total_price, products, paindUnit, notes }));
+            const { customerId, shipperId, supplierId, state, products, discount, notes } = req.body;
+            res.json(await this.service.insert({ customerId, state, shipperId, supplierId, discount, products, notes }));
 
         } catch (err) {
             next(err)
@@ -41,8 +40,8 @@ export class orderController {
 
     update = async (req: any, res: any, next: NextFunction) => {
         try {
-            const { id, customerId, shipperId, supplierId, state, products, paid, total_price, paindUnit, notes } = req.body;
-            res.json(await this.service.update({ id, customerId, state, shipperId, paid, supplierId, total_price, products, paindUnit, notes }))
+            const { id, customerId, shipperId, supplierId, state, products, discount, notes } = req.body;
+            res.json(await this.service.update({ id, customerId, state, shipperId, supplierId, discount, products, notes }))
         } catch (err) {
             next(err)
         }

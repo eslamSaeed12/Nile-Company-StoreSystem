@@ -1,17 +1,19 @@
 import { injectable } from "tsyringe";
-import { Connection, EntityManager, getRepository, Repository } from "typeorm";
+import { Connection, Repository } from "typeorm";
 import { Order } from "../database/models/Order";
 import { Order_Product } from "../database/models/Order_Product";
 import _ from 'lodash'
+import { Account } from "../database/models/Account";
+import { FinancialService } from "./financial.service";
+import { customerService } from "./customer.service";
+import { Product } from "../database/models/Product";
 @injectable()
 export class orderService {
 
 
     private OrderCtx: Repository<Order>;
     private OrderPrdctCtx: Repository<Order_Product>;
-    private mgr!: EntityManager;
-
-    constructor(db: Connection) {
+    constructor(private db: Connection, private accountService: FinancialService, private CustomerService: customerService) {
         this.OrderCtx = db.getRepository(Order);
         this.OrderPrdctCtx = db.getRepository(Order_Product);
     }
@@ -32,6 +34,12 @@ export class orderService {
 
     async insert(dto: any) {
 
+        const cost = await this.calculateOrderCost(dto.products) - parseInt(dto.discount);
+
+        const customer_ = await this.CustomerService.find(dto.customerId);
+
+        await this.accountService.increaseDebt(customer_.account.id, cost);
+
         let order = this.OrderCtx.create({
             customer: {
                 id: dto.customerId
@@ -43,9 +51,8 @@ export class orderService {
                 id: dto.supplierId
             },
             notes: dto.notes,
-            paindUnit: dto.paidUnit,
-            paid: dto.paid,
-            total_price: dto.total_price,
+            cost: cost,
+            discount: dto.discount,
             state: dto.state,
         });
 
@@ -59,13 +66,23 @@ export class orderService {
         const prods = this.OrderPrdctCtx.create(mappedProds);
 
         // save order products
-        let products = await this.OrderPrdctCtx.save(prods, { reload: true });
+        let products = await this.OrderPrdctCtx.save(prods);
 
 
         return { ...order, products };
     }
 
     async update(dto: any) {
+
+        const thisOrder = await this.find(dto.id);
+
+        const oldCost = thisOrder.cost;
+
+        await this.accountService.decreaseDebt(dto.customerId, oldCost);
+
+        const newCost = await this.calculateOrderCost(dto.products) - dto.discount;
+
+        await this.accountService.increaseDebt(dto.customerId, newCost);
 
         await this.OrderCtx.update(dto.id, {
             customer: {
@@ -78,9 +95,8 @@ export class orderService {
                 id: dto.supplierId
             },
             notes: dto.notes,
-            paindUnit: dto.paidUnit,
-            paid: dto.paid,
-            total_price: dto.total_price,
+            cost: newCost,
+            discount: dto.discount,
             state: dto.state,
         });
 
@@ -114,7 +130,32 @@ export class orderService {
     }
 
     async delete(id: string) {
-        return await this.OrderCtx.delete(id)
+        const thisOrder = await this.find(id);
+        const cost = thisOrder.cost;
+        const customerId = thisOrder.customer?.id as any;
+        await this.accountService.decreaseDebt(customerId, cost);
+        await this.OrderPrdctCtx.delete({ orderId: Number(id) });
+        return await this.OrderCtx.delete(id);
+    }
+
+
+    async calculateProductCost(productId: number, quantity: number) {
+        const query = `select (price * ${quantity}) as cost_ from product where product."id" = '${productId}'`;
+        console.log(await this.db.query(query))
+        return (await this.db.query(query))[0];
+    }
+
+
+    async calculateOrderCost(products: Array<{ productId: number, quantity: number }>) {
+        let totalCost = 0;
+
+        for (let i = 0; i < products.length; i++) {
+            console.log(products[i].productId, products[i].quantity)
+            let cost = (await this.calculateProductCost(products[i].productId, products[i].quantity))?.cost_;
+            totalCost += cost;
+        }
+
+        return totalCost;
     }
 
 }

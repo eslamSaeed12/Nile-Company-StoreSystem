@@ -1,5 +1,5 @@
-import { Transform, Type } from "class-transformer";
-import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate, ValidateNested } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, Validate, ValidateIf, ValidateNested } from "class-validator";
 import { Exist } from "../../database/validators/Exist";
 
 
@@ -25,31 +25,21 @@ export class createOrder {
     @IsNotEmpty()
     @IsNumber()
     @Transform(({ value }) => parseFloat(value))
-    paid!: number;
+    discount!: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    @Transform(({ value }) => parseFloat(value))
-    total_price!: number;
-
-
-    @IsString()
-    @MaxLength(25)
-    @MinLength(2)
-    @IsOptional()
-    paindUnit?: string;
 
     @IsOptional()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @ValidateIf((o, v) => v !== null)
     shipperId?: number;
 
     @IsOptional()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @ValidateIf((o, v) => v !== null)
     supplierId?: number;
 
-    @IsOptional()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
     customerId!: number;
@@ -58,7 +48,6 @@ export class createOrder {
     @ValidateNested({ each: true })
     products!: Array<prod>;
 
-    @IsNotEmpty()
     @IsString()
     @IsOptional()
     notes?: string;
@@ -71,12 +60,12 @@ export class createOrder {
 
 
 export class updateOrder {
+
     @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
     @Validate(Exist, [{ entity: 'order' }])
     id?: number;
-
 
     @IsNotEmpty()
     @IsEnum([1, 2, 3, 4])
@@ -85,31 +74,20 @@ export class updateOrder {
     @IsNotEmpty()
     @IsNumber()
     @Transform(({ value }) => parseFloat(value))
-    paid!: number;
-
-    @IsNotEmpty()
-    @IsNumber()
-    @Transform(({ value }) => parseFloat(value))
-    total_price!: number;
-
-
-    @IsString()
-    @MaxLength(25)
-    @MinLength(2)
-    @IsOptional()
-    paindUnit?: string;
+    discount!: number;
 
     @IsOptional()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @ValidateIf((o, v) => v !== null)
     shipperId?: number;
 
     @IsOptional()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
+    @ValidateIf((o, v) => v !== null)
     supplierId?: number;
 
-    @IsOptional()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
     customerId!: number;
@@ -118,11 +96,9 @@ export class updateOrder {
     @ValidateNested({ each: true })
     products!: Array<prod>;
 
-    @IsNotEmpty()
     @IsString()
     @IsOptional()
     notes?: string;
-
 
 
     @IsString()

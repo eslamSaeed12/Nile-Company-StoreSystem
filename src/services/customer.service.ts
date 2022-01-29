@@ -3,6 +3,7 @@ import { createCustomer, updateCustomer } from "../http/dtos/customer.dto";
 import { Connection, getRepository, Repository } from "typeorm";
 import { Customer } from "../database/models/Customer";
 import { IsUniqueButNotMe } from "../utils/AlterUnique";
+import { FinancialService } from "./financial.service";
 
 @injectable()
 export class customerService {
@@ -10,8 +11,9 @@ export class customerService {
 
     private dbContext: Repository<Customer>;
 
-    constructor(private db: Connection) {
+    constructor(private db: Connection, private accountService: FinancialService) {
         this.dbContext = db.getRepository(Customer);
+
     }
 
     async All() {
@@ -23,12 +25,12 @@ export class customerService {
     }
 
     async find(id: string) {
-        return await this.dbContext.findOneOrFail(id);
+        return await this.dbContext.findOneOrFail(id, { relations: ['account'] });
     }
 
     async insert(dto: createCustomer) {
-
-        return await this.dbContext.insert(dto)
+        const newAccount = await this.accountService.create();
+        return await this.dbContext.insert({ ...dto, account: newAccount })
     }
 
     async update(dto: updateCustomer) {

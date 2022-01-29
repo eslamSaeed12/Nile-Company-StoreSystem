@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
+import { Account } from "./Account";
 import { Order } from "./Order";
 
 @Entity()
@@ -10,13 +11,13 @@ export class Customer {
     @Column({ unique: true })
     customer_name!: string;
 
-    @Column({})
+    @Column()
     customer_addresse!: string;
 
-    @Column({})
+    @Column()
     customer_phoneNumber!: string;
 
-    @Column({})
+    @Column()
     isProvider!: boolean;
 
     @Column({ nullable: true })
@@ -28,7 +29,11 @@ export class Customer {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-    @ManyToOne(type => Order, o => o?.customer)
+    @OneToOne(type => Account)
+    @JoinColumn()
+    account!: Account;
+
+    @OneToMany(type => Order, o => o?.customer)
     orders?: Order[]
 
 }

@@ -30,13 +30,6 @@ export class createProduct {
 
 
     @IsNotEmpty()
-    @IsString()
-    @MaxLength(25)
-    @MinLength(2)
-    @IsOptional()
-    price_unit?: string;
-
-    @IsNotEmpty()
     @IsInt()
     @Transform(({ value }) => parseInt(value))
     categoryId!: number;
@@ -80,14 +73,6 @@ export class updateProduct {
     @IsNumber()
     @Transform(({ value }) => parseFloat(value))
     price!: number;
-
-
-    @IsString()
-    @MaxLength(25)
-    @MinLength(2)
-    @IsOptional()
-    @IsNotEmpty()
-    price_unit?: string;
 
     @IsNotEmpty()
     @IsInt()
