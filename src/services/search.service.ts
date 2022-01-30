@@ -48,7 +48,16 @@ export class searchService {
 
         let suppliers = await this.supplierRepo.query(`select * from supplier where "supplier"."Supplier_name" LIKE '%${text}%' `);
 
+        const result = [
+            ...categories?.map((Category_: Category) => ({ type: 'صنف', id: Category_.id, title: Category_.title, href: 'categories' })),
+            ...roles?.map((role_: Role) => ({ type: 'صلاحية', id: role_.id, title: role_.title, href: 'roles' })),
+            ...users?.map((user_: User) => ({ type: 'مستخدم', id: user_.id, title: user_.username, href: 'users' })),
+            ...shippers?.map((entity: Shipper) => ({ type: 'سائق', id: entity.id, title: entity.shipper_name, href: 'shippers' })),
+            ...customers?.map((entity: Customer) => ({ type: 'عميل', id: entity.id, title: entity.customer_name, href: 'customers' })),
+            ...suppliers?.map((entity: Supplier) => ({ type: 'عميل', id: entity.id, title: entity.Supplier_name, href: 'suppliers' })),
+            ...products?.map((entity: Product) => ({ type: 'منتج', id: entity.id, title: entity.product_name, href: 'products' })),
+        ]
 
-        return { categories, products, shippers, customers, roles, suppliers, users }
+        return result;
     }
 }

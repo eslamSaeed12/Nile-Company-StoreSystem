@@ -19,7 +19,6 @@ export class searchText {
     @IsNotEmpty()
     @IsString()
     @Transform(({ value }) => String(value))
-    @MinLength(2)
-    @MaxLength(12)
+    @MaxLength(255)
     text!: string;
 }
