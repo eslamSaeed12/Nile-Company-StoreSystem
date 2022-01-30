@@ -6,6 +6,7 @@ import { Router_ } from "../../modules/IRouter";
 import { AuthController } from "../controllers/auth.ctr";
 import { CategoryController } from "../controllers/category.ctr";
 import { customerController } from "../controllers/customer.ctr";
+import { financialController } from "../controllers/Financial.ctr";
 import { orderController } from "../controllers/order.ctr";
 import { productController } from "../controllers/product.ctr";
 import { profileController } from "../controllers/Profile.ctr";
@@ -16,8 +17,9 @@ import { userController } from "../controllers/user.ctr";
 import { UtilsController } from "../controllers/utils.ctr";
 import { AuthLogin } from "../dtos/Auth.dto";
 import { createCategory, updateCategory } from "../dtos/category.dto";
-import { PrimaryKey } from "../dtos/common.dto";
+import { PrimaryKey, searchText } from "../dtos/common.dto";
 import { createCustomer, updateCustomer } from "../dtos/customer.dto";
+import { _PAID_A_DEPT_ } from "../dtos/financial.dto";
 import { updateOrder, createOrder } from "../dtos/order.dto";
 import { createProduct, updateProduct } from "../dtos/product.dto";
 import { _getToken_, _UpdateProfile_ } from "../dtos/profile.dto";
@@ -48,6 +50,13 @@ export class ApiRouter extends Router_ {
     const middlewareCollection = (validationBody?: ClassConstructor<any>) => validationBody ? withValidation(validationBody) : withoutValidation;
 
 
+    // debts and funds
+
+    this.Router.get('/financial/debts', middlewareCollection(), this.financialCtr.getDebts);
+
+    this.Router.get('/financial/funds', middlewareCollection(), this.financialCtr.getFunds);
+
+    this.Router.post('/financial', middlewareCollection(_PAID_A_DEPT_), this.financialCtr.paidForAdebt);
 
     // profile
     this.Router.post('/profile/:id', middlewareCollection(_getToken_), this.profileCtr.getToken);
@@ -55,6 +64,7 @@ export class ApiRouter extends Router_ {
 
     // utils
 
+    this.Router.post('/utils/search', middlewareCollection(searchText), this.utilsCtr.serachForAtext);
     this.Router.get('/utils/stats', middlewareCollection(), this.utilsCtr.getStats);
     this.Router.get('/utils/shippers', middlewareCollection(), this.utilsCtr.topShippers);
     this.Router.get('/utils/customers', middlewareCollection(), this.utilsCtr.topCustomers);
@@ -141,7 +151,7 @@ export class ApiRouter extends Router_ {
 
 
 
-  constructor(private utilsCtr: UtilsController, private profileCtr: profileController, private authenticated: AuthenticatedMiddleware, private jwtChecker: JwtCheckerMiddleware, private cusotmerCtr: customerController, private authCtr: AuthController, private categoryCtr: CategoryController, private userCtr: userController, private orderCtr: orderController, private supplierCtr: supplierController, private proudctCtr: productController, private shipperCtr: shipperController, private roleCtr: roleController, private shiperCtr: shipperController) {
+  constructor(private utilsCtr: UtilsController, private financialCtr: financialController, private profileCtr: profileController, private authenticated: AuthenticatedMiddleware, private jwtChecker: JwtCheckerMiddleware, private cusotmerCtr: customerController, private authCtr: AuthController, private categoryCtr: CategoryController, private userCtr: userController, private orderCtr: orderController, private supplierCtr: supplierController, private proudctCtr: productController, private shipperCtr: shipperController, private roleCtr: roleController, private shiperCtr: shipperController) {
     super()
   }
 }

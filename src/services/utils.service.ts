@@ -28,9 +28,9 @@ export class UtilsService {
                         
                             (select count(*) as orders  from public."order" ) as o,
                             
-                            (select sum(cost) as debts from "order" where "customerId" = $1 ) as d,
+                            (select sum(cost - paid) as debts from "order" where "customerId" = $1 and cost != paid ) as d,
                             
-                            (select sum(cost) as funds from "order" where "supplierId" = $2 ) as f
+                            (select sum(cost - paid) as funds from "order" where "supplierId" = $2 and cost != paid ) as f
                             
 
                         `

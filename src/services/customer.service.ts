@@ -1,9 +1,8 @@
 import { injectable } from "tsyringe";
 import { createCustomer, updateCustomer } from "../http/dtos/customer.dto";
-import { Connection, getRepository, Repository } from "typeorm";
+import { Connection, Repository } from "typeorm";
 import { Customer } from "../database/models/Customer";
 import { IsUniqueButNotMe } from "../utils/AlterUnique";
-import { FinancialService } from "./financial.service";
 
 @injectable()
 export class customerService {
@@ -11,7 +10,7 @@ export class customerService {
 
     private dbContext: Repository<Customer>;
 
-    constructor(private db: Connection, private accountService: FinancialService) {
+    constructor(private db: Connection) {
         this.dbContext = db.getRepository(Customer);
 
     }
@@ -29,8 +28,7 @@ export class customerService {
     }
 
     async insert(dto: createCustomer) {
-        const newAccount = await this.accountService.create();
-        return await this.dbContext.insert({ ...dto, account: newAccount })
+        return await this.dbContext.insert({ ...dto })
     }
 
     async update(dto: updateCustomer) {

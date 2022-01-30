@@ -41,6 +41,6 @@ export class Exist implements ValidatorConstraintInterface {
     }
 
     defaultMessage(args: ValidationArguments) {
-        return "id {$value} you seek for is not exist !";
+        return "id ($value) you seek for is not exist !";
     }
 }

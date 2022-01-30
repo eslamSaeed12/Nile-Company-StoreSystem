@@ -3,17 +3,13 @@ import { Connection, Repository } from "typeorm";
 import { Order } from "../database/models/Order";
 import { Order_Product } from "../database/models/Order_Product";
 import _ from 'lodash'
-import { Account } from "../database/models/Account";
-import { FinancialService } from "./financial.service";
-import { customerService } from "./customer.service";
-import { Product } from "../database/models/Product";
 @injectable()
 export class orderService {
 
 
     private OrderCtx: Repository<Order>;
     private OrderPrdctCtx: Repository<Order_Product>;
-    constructor(private db: Connection, private accountService: FinancialService, private CustomerService: customerService) {
+    constructor(private db: Connection) {
         this.OrderCtx = db.getRepository(Order);
         this.OrderPrdctCtx = db.getRepository(Order_Product);
     }
@@ -36,10 +32,6 @@ export class orderService {
 
         const cost = await this.calculateOrderCost(dto.products) - parseInt(dto.discount);
 
-        const customer_ = await this.CustomerService.find(dto.customerId);
-
-        await this.accountService.increaseDebt(customer_.account.id, cost);
-
         let order = this.OrderCtx.create({
             customer: {
                 id: dto.customerId
@@ -51,6 +43,7 @@ export class orderService {
                 id: dto.supplierId
             },
             notes: dto.notes,
+            paid: dto.paid,
             cost: cost,
             discount: dto.discount,
             state: dto.state,
@@ -74,15 +67,7 @@ export class orderService {
 
     async update(dto: any) {
 
-        const thisOrder = await this.find(dto.id);
-
-        const oldCost = thisOrder.cost;
-
-        await this.accountService.decreaseDebt(dto.customerId, oldCost);
-
         const newCost = await this.calculateOrderCost(dto.products) - dto.discount;
-
-        await this.accountService.increaseDebt(dto.customerId, newCost);
 
         await this.OrderCtx.update(dto.id, {
             customer: {
@@ -98,6 +83,7 @@ export class orderService {
             cost: newCost,
             discount: dto.discount,
             state: dto.state,
+            paid: dto.paid
         });
 
         let _result_ = await this.syncOrderProducts(dto.id, dto.products)
@@ -130,10 +116,6 @@ export class orderService {
     }
 
     async delete(id: string) {
-        const thisOrder = await this.find(id);
-        const cost = thisOrder.cost;
-        const customerId = thisOrder.customer?.id as any;
-        await this.accountService.decreaseDebt(customerId, cost);
         await this.OrderPrdctCtx.delete({ orderId: Number(id) });
         return await this.OrderCtx.delete(id);
     }
@@ -141,7 +123,6 @@ export class orderService {
 
     async calculateProductCost(productId: number, quantity: number) {
         const query = `select (price * ${quantity}) as cost_ from product where product."id" = '${productId}'`;
-        console.log(await this.db.query(query))
         return (await this.db.query(query))[0];
     }
 

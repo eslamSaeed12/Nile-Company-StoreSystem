@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 export class PrimaryKey {
     @IsNotEmpty()
@@ -10,4 +10,16 @@ export class PrimaryKey {
     @IsOptional()
     @IsString()
     csrf_token?: string;
+}
+
+
+
+export class searchText {
+
+    @IsNotEmpty()
+    @IsString()
+    @Transform(({ value }) => String(value))
+    @MinLength(2)
+    @MaxLength(12)
+    text!: string;
 }

@@ -26,7 +26,11 @@ export class createOrder {
     @IsNumber()
     @Transform(({ value }) => parseFloat(value))
     discount!: number;
-
+    
+    @IsOptional()
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
+    paid?: number;
 
     @IsOptional()
     @IsInt()
@@ -75,6 +79,11 @@ export class updateOrder {
     @IsNumber()
     @Transform(({ value }) => parseFloat(value))
     discount!: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
+    paid?: number;
 
     @IsOptional()
     @IsInt()

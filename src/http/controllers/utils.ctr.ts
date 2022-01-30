@@ -1,12 +1,13 @@
 import { injectable } from "tsyringe";
 import { Request, Response, NextFunction } from "express"
 import { UtilsService } from "../../services/utils.service";
+import { searchService } from "../../services/search.service";
 
 @injectable()
 export class UtilsController {
 
 
-    constructor(protected service: UtilsService) {
+    constructor(protected service: UtilsService, private searchService: searchService) {
     }
 
 
@@ -64,6 +65,17 @@ export class UtilsController {
     getLastYearFunds = async (req: Request, res: Response, next: NextFunction) => {
         try {
             res.json(await this.service.getFundsOflastYear())
+        } catch (err) {
+            next(err)
+        }
+    }
+
+
+
+    serachForAtext = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { text } = req.body;
+            res.json(await this.searchService.search(text))
         } catch (err) {
             next(err)
         }

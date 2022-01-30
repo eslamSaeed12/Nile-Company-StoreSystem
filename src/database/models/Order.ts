@@ -28,6 +28,9 @@ export class Order {
     @Column('decimal')
     cost!: number;
 
+    @Column({ type: 'decimal', default: 0 })
+    paid!: number;
+
     @Column({ nullable: true })
     notes!: string;  //   
 
