@@ -15,6 +15,15 @@ export class AuthController {
     }
 
 
+    form = (req: any, res: any, next: NextFunction) => {
+        try {
+            res.json({ csrf_Token: req.csrfToken() })
+        } catch (err) {
+            next(err);
+        }
+    }
+
+
     ok = (req: any, res: any, next: NextFunction) => {
         const user = req.user;
         res.status(200).json({
@@ -69,6 +78,14 @@ export class AuthController {
         try {
             res.clearCookie("X_META_JWT");
             res.json("ok").status(200);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    generateToken = async (req: any, res: any, next: NextFunction) => {
+        try {
+            res.json({ token: req.csrfToken() }).status(200);
         } catch (err) {
             next(err);
         }

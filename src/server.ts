@@ -83,8 +83,7 @@ export class server {
         sameSite: !isDev,
       })
     );
-
-    /*this.server.use(
+    this.server.use(
       csurf({
         cookie: {
           maxAge: 3600,
@@ -93,7 +92,7 @@ export class server {
           sameSite: !isDev,
         },
       })
-    );*/
+    );
   }
 
   private registerExceptionFilters() {
